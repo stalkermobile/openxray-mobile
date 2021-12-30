@@ -73,7 +73,7 @@ void CRenderTarget::phase_combine()
         // Clear to zero
         RCache.ClearRT(rt_Generic_0_r, {});
         RCache.ClearRT(rt_Generic_1_r, {});
-        u_setrt(rt_Generic_0_r, rt_Generic_1_r, nullptr, rt_MSAADepth->pZRT);
+        u_setrt(rt_Generic_0_r, rt_Generic_1_r, nullptr, rt_MSAADepth);
     }
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
@@ -274,7 +274,7 @@ void CRenderTarget::phase_combine()
     // Forward rendering
     {
         PIX_EVENT(Forward_rendering);
-        u_setrt(rt_Generic_0_r, nullptr, nullptr, rt_MSAADepth->pZRT); // LDR RT
+        u_setrt(rt_Generic_0_r, nullptr, nullptr, rt_MSAADepth); // LDR RT
         RCache.set_CullMode(CULL_CCW);
         RCache.set_Stencil(FALSE);
         RCache.set_ColorWriteEnable();
@@ -308,7 +308,7 @@ void CRenderTarget::phase_combine()
         if (bDistort)
         {
             PIX_EVENT(render_distort_objects);
-            u_setrt(rt_Generic_1_r, 0, 0, rt_MSAADepth->pZRT); // Now RT is a distortion mask
+            u_setrt(rt_Generic_1_r, 0, 0, rt_MSAADepth); // Now RT is a distortion mask
             RCache.ClearRT(rt_Generic_1_r, color_rgba(127, 127, 0, 127));
             RCache.set_CullMode(CULL_CCW);
             RCache.set_Stencil(FALSE);
@@ -331,12 +331,12 @@ void CRenderTarget::phase_combine()
     // Combine everything + perform AA
     if (RImplementation.o.dx10_msaa)
     {
-        if (PP_Complex) u_setrt(rt_Generic, 0, 0, get_base_zb()); // LDR RT
+        if (PP_Complex) u_setrt(rt_Generic, 0, 0, rt_Base_Depth); // LDR RT
         else u_setrt(Device.dwWidth, Device.dwHeight, get_base_rt(), 0, 0, get_base_zb());
     }
     else
     {
-        if (PP_Complex) u_setrt(rt_Color, 0, 0, get_base_zb()); // LDR RT
+        if (PP_Complex) u_setrt(rt_Color, 0, 0, rt_Base_Depth); // LDR RT
         else u_setrt(Device.dwWidth, Device.dwHeight, get_base_rt(), 0, 0, get_base_zb());
     }
     //. u_setrt				( Device.dwWidth,Device.dwHeight,get_base_rt(), 0, 0,get_base_zb());
@@ -573,7 +573,7 @@ void CRenderTarget::phase_wallmarks()
     // Targets
     RCache.set_RT(0, 2);
     RCache.set_RT(0, 1);
-    u_setrt(rt_Color, nullptr, nullptr, rt_MSAADepth->pZRT);
+    u_setrt(rt_Color, nullptr, nullptr, rt_MSAADepth);
     // Stencil	- draw only where stencil >= 0x1
     RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
     RCache.set_CullMode(CULL_CCW);
@@ -589,7 +589,7 @@ void CRenderTarget::phase_combine_volumetric()
     //	TODO: DX10: Remove half pixel offset here
 
     //u_setrt(rt_Generic_0,0,0,get_base_zb() );			// LDR RT
-    u_setrt(rt_Generic_0_r, rt_Generic_1_r, nullptr, rt_MSAADepth->pZRT);
+    u_setrt(rt_Generic_0_r, rt_Generic_1_r, nullptr, rt_MSAADepth);
 
     //	Sets limits to both render targets
     RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);

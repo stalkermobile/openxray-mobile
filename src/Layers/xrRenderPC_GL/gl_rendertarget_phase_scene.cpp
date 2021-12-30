@@ -59,13 +59,13 @@ void CRenderTarget::phase_scene_begin()
     // Targets, use accumulator for temporary storage
     if (!RImplementation.o.dx10_gbuffer_opt)
     {
-        if (RImplementation.o.albedo_wo) u_setrt(rt_Position, rt_Normal, rt_Accumulator, rt_MSAADepth->pZRT);
-        else u_setrt(rt_Position, rt_Normal, rt_Color, rt_MSAADepth->pZRT);
+        if (RImplementation.o.albedo_wo) u_setrt(rt_Position, rt_Normal, rt_Accumulator, rt_MSAADepth);
+        else u_setrt(rt_Position, rt_Normal, rt_Color, rt_MSAADepth);
     }
     else
     {
-        if (RImplementation.o.albedo_wo) u_setrt(rt_Position, rt_Accumulator, rt_MSAADepth->pZRT);
-        else u_setrt(rt_Position, rt_Color, rt_MSAADepth->pZRT);
+        if (RImplementation.o.albedo_wo) u_setrt(rt_Position, rt_Accumulator, rt_MSAADepth);
+        else u_setrt(rt_Position, rt_Color, rt_MSAADepth);
         //else								u_setrt		(rt_Position,	rt_Color, rt_Normal,		rt_MSAADepth->pZRT);
     }
 
@@ -96,7 +96,7 @@ void CRenderTarget::phase_scene_end()
     if (!RImplementation.o.albedo_wo) return;
 
     // transfer from "rt_Accumulator" into "rt_Color"
-    u_setrt(rt_Color, nullptr, nullptr, rt_MSAADepth->pZRT);
+    u_setrt(rt_Color, nullptr, nullptr, rt_MSAADepth);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00); // stencil should be >= 1
     if (RImplementation.o.nvstencil) u_stencil_optimize(SO_Combine);
